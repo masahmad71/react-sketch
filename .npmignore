@@ -1,6 +1,6 @@
 examples/
 test/
-src/
+#src/
 docs/
 .travis.yml
 .babelrc
