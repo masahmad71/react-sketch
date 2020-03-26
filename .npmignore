@@ -1,13 +1,13 @@
 examples/
 test/
-#src/
+src/
 docs/
 .travis.yml
 .babelrc
 .eslint
 .gitignore
 .karma.config.js
-#webpack.*
+webpack.*
 yarn.lock
 package.lock
 
