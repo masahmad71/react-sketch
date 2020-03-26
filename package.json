@@ -1,6 +1,6 @@
 {
   "name": "react-sketch",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Sketch Element for React based applications, backed-up by fabricjs as its core",
   "keywords": [
     "react",
@@ -15,10 +15,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tbolis/react-sketch.git"
+    "url": "https://github.com/masahmad71/react-sketch.git"
   },
   "bugs": {
-    "url": "https://github.com/tbolis/react-sketch/issues"
+    "url": "https://github.com/masahmad71/react-sketch/issues"
   },
   "license": "MIT",
   "main": "./dist",
