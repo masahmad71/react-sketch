@@ -7,7 +7,7 @@ docs/
 .eslint
 .gitignore
 .karma.config.js
-webpack.*
+#webpack.*
 yarn.lock
 package.lock
 
