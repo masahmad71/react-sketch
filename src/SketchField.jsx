@@ -76,8 +76,16 @@ class SketchField extends PureComponent {
     onObjectScaling: PropTypes.func,
     // event object rotating
     onObjectRotating: PropTypes.func,
+
     // event object selected
     onObjectSelected: PropTypes.func,
+
+    // event selection updated
+    onSelectionUpdated: PropTypes.func,
+
+    // event selection updated
+    onSelectionCreated: PropTypes.func,
+
     // Class name to pass to container div of canvas
     className: PropTypes.string,
     // Style options to pass to container div of canvas
@@ -106,6 +114,7 @@ class SketchField extends PureComponent {
     onObjectScaling: () => null,
     onObjectRotating: () => null,
     onObjectSelected: () => null,
+    onSelectionUpdated: () => null,
   };
 
   state = {
@@ -219,11 +228,27 @@ class SketchField extends PureComponent {
   };
 
   /**
- * Action when an object is selected inside the canvas
- */
+  * Action when an object is selected inside the canvas
+  */
   _onObjectSelected = (e) => {
     const { onObjectSelected } = this.props;
     onObjectSelected(e);
+  };
+
+  /**
+  * Action when an selection is updated inside the canvas
+  */
+  _onSelectionUpdated = (e) => {
+    const { onSelectionUpdated } = this.props;
+    onSelectionUpdated(e);
+  };
+
+  /**
+  * Action when an selection is updated inside the canvas
+  */
+  _onSelectionCreated = (e) => {
+    const { onSelectionCreated } = this.props;
+    onSelectionCreated(e);
   };
 
   _onObjectModified = (e) => {
@@ -679,6 +704,8 @@ class SketchField extends PureComponent {
     canvas.on('object:scaling', e => this.callEvent(e, this._onObjectScaling));
     canvas.on('object:rotating', e => this.callEvent(e, this._onObjectRotating));
     canvas.on('object:selected', e => this.callEvent(e, this._onObjectSelected));
+    canvas.on('selection:updated', e => this.callEvent(e, this._onSelectionUpdated));
+    canvas.on('selection:created', e => this.callEvent(e, this._onSelectionCreated));
     // IText Events fired on Adding Text
     // canvas.on("text:event:changed", console.log)
     // canvas.on("text:selection:changed", console.log)
