@@ -391,6 +391,10 @@ class SketchField extends PureComponent {
     canvas.setBackgroundColor(color, () => canvas.renderAll())
   };
 
+  canvas = () => {
+    return this._fc;
+  }
+
   /**
    * Zoom the drawing by the factor specified
    *
