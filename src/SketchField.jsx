@@ -668,8 +668,8 @@ class SketchField extends PureComponent {
       Object.assign(options, opts);
 
       iText.set({
-        'left': opts.left ?? 0,
-        'top': opts.top ?? 0
+        'left': opts.left || 0,
+        'top': opts.top || 0
       });
 
     }
