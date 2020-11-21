@@ -532,7 +532,7 @@ class SketchField extends PureComponent {
           canvas.isDrawingMode = canvas.selection = false;
           canvas.forEachObject((o) => o.selectable = o.evented = false);
         }
-        
+
         canvas.renderAll();
 
         canvas.setViewportTransform(canvas.viewportTransform);
@@ -648,18 +648,36 @@ class SketchField extends PureComponent {
     img.src = dataUrl
   };
 
-  addText = (text, options = {}) => {
+  addText = (text, options = {}, position = null) => {
     let canvas = this._fc;
     let iText = new fabric.IText(text, options);
-    let opts = {
-      left: (canvas.getWidth() - iText.width) * 0.5,
-      top: (canvas.getHeight() - iText.height) * 0.5,
-    };
-    Object.assign(options, opts);
-    iText.set({
-      'left': options.left,
-      'top': options.top
-    });
+
+    if (position) {
+
+      iText.set({
+        'left': position.left || 100,
+        'top': position.top || 100
+      });
+
+    } else {
+
+      let opts = {
+        left: (canvas.getWidth() - iText.width) * 0.5,
+        top: (canvas.getHeight() - iText.height) * 0.5,
+      };
+      Object.assign(options, opts);
+
+      iText.set({
+        'left': opts.left ?? 0,
+        'top': opts.top ?? 0
+      });
+
+    }
+
+    // // eslint-disable-next-line no-console
+    // console.log(position);
+    // // eslint-disable-next-line no-console
+    // console.log(iText);
 
     canvas.add(iText);
   };
