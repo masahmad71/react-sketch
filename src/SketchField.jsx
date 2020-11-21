@@ -532,7 +532,11 @@ class SketchField extends PureComponent {
           canvas.isDrawingMode = canvas.selection = false;
           canvas.forEachObject((o) => o.selectable = o.evented = false);
         }
+        
         canvas.renderAll();
+
+        canvas.setViewportTransform(canvas.viewportTransform);
+
         if (this.props.onChange) {
           this.props.onChange()
         }
@@ -743,6 +747,13 @@ class SketchField extends PureComponent {
         this._selectedTool.configureCanvas(this.props);
       }
     }
+
+    if (this.props.lineColor !== prevProps.lineColor) {
+      if (this._selectedTool) {
+        this._selectedTool.configureCanvas(this.props);
+      }
+    }
+
 
     if (this.props.backgroundColor !== prevProps.backgroundColor) {
       this._backgroundColor(this.props.backgroundColor)
