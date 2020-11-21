@@ -1,9 +1,9 @@
 /*eslint no-unused-vars: 0*/
 
-import React, {PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import History from './history';
-import {uuid4} from './utils';
+import { uuid4 } from './utils';
 import Select from './select';
 import Pencil from './pencil';
 import Line from './line';
@@ -77,6 +77,16 @@ class SketchField extends PureComponent {
     onObjectScaling: PropTypes.func,
     // event object rotating
     onObjectRotating: PropTypes.func,
+
+    // event object selected
+    onObjectSelected: PropTypes.func,
+
+    // event selection updated
+    onSelectionUpdated: PropTypes.func,
+
+    // event selection updated
+    onSelectionCreated: PropTypes.func,
+
     // Class name to pass to container div of canvas
     className: PropTypes.string,
     // Style options to pass to container div of canvas
@@ -94,16 +104,18 @@ class SketchField extends PureComponent {
     widthCorrection: 0,
     heightCorrection: 0,
     forceValue: false,
-    onObjectAdded:()=>null,
-    onObjectModified:()=>null,
-    onObjectRemoved:()=>null,
-    onMouseDown:()=>null,
-    onMouseMove:()=>null,
-    onMouseUp:()=>null,
-    onMouseOut:()=>null,
-    onObjectMoving:()=>null,
-    onObjectScaling:()=>null,
-    onObjectRotating:()=>null,
+    onObjectAdded: () => null,
+    onObjectModified: () => null,
+    onObjectRemoved: () => null,
+    onMouseDown: () => null,
+    onMouseMove: () => null,
+    onMouseUp: () => null,
+    onMouseOut: () => null,
+    onObjectMoving: () => null,
+    onObjectScaling: () => null,
+    onObjectRotating: () => null,
+    onObjectSelected: () => null,
+    onSelectionUpdated: () => null,
   };
 
   state = {
@@ -176,7 +188,7 @@ class SketchField extends PureComponent {
    * Action when an object is added to the canvas
    */
   _onObjectAdded = (e) => {
-    const {onObjectAdded} = this.props;
+    const { onObjectAdded } = this.props;
     if (!this.state.action) {
       this.setState({ action: true });
       return
@@ -196,7 +208,7 @@ class SketchField extends PureComponent {
    * Action when an object is moving around inside the canvas
    */
   _onObjectMoving = (e) => {
-    const {onObjectMoving} = this.props;
+    const { onObjectMoving } = this.props;
     onObjectMoving(e);
   };
 
@@ -204,7 +216,7 @@ class SketchField extends PureComponent {
    * Action when an object is scaling inside the canvas
    */
   _onObjectScaling = (e) => {
-    const {onObjectScaling} = this.props;
+    const { onObjectScaling } = this.props;
     onObjectScaling(e);
   };
 
@@ -212,12 +224,36 @@ class SketchField extends PureComponent {
    * Action when an object is rotating inside the canvas
    */
   _onObjectRotating = (e) => {
-    const {onObjectRotating} = this.props;
+    const { onObjectRotating } = this.props;
     onObjectRotating(e);
   };
 
+  /**
+  * Action when an object is selected inside the canvas
+  */
+  _onObjectSelected = (e) => {
+    const { onObjectSelected } = this.props;
+    onObjectSelected(e);
+  };
+
+  /**
+  * Action when an selection is updated inside the canvas
+  */
+  _onSelectionUpdated = (e) => {
+    const { onSelectionUpdated } = this.props;
+    onSelectionUpdated(e);
+  };
+
+  /**
+  * Action when an selection is updated inside the canvas
+  */
+  _onSelectionCreated = (e) => {
+    const { onSelectionCreated } = this.props;
+    onSelectionCreated(e);
+  };
+
   _onObjectModified = (e) => {
-    const {onObjectModified} = this.props;
+    const { onObjectModified } = this.props;
     let obj = e.target;
     obj.__version += 1;
     let prevState = JSON.stringify(obj.__originalState);
@@ -233,7 +269,7 @@ class SketchField extends PureComponent {
    * Action when an object is removed from the canvas
    */
   _onObjectRemoved = (e) => {
-    const {onObjectRemoved} = this.props;
+    const { onObjectRemoved } = this.props;
     let obj = e.target;
     if (obj.__removed) {
       obj.__version += 1;
@@ -247,7 +283,7 @@ class SketchField extends PureComponent {
    * Action when the mouse button is pressed down
    */
   _onMouseDown = (e) => {
-    const{onMouseDown} = this.props;
+    const { onMouseDown } = this.props;
     this._selectedTool.doMouseDown(e);
     onMouseDown(e);
   };
@@ -256,7 +292,7 @@ class SketchField extends PureComponent {
    * Action when the mouse cursor is moving around within the canvas
    */
   _onMouseMove = (e) => {
-    const {onMouseMove} = this.props;
+    const { onMouseMove } = this.props;
     this._selectedTool.doMouseMove(e);
     onMouseMove(e);
   };
@@ -265,7 +301,7 @@ class SketchField extends PureComponent {
    * Action when the mouse cursor is moving out from the canvas
    */
   _onMouseOut = (e) => {
-    const {onMouseOut} = this.props;
+    const { onMouseOut } = this.props;
     this._selectedTool.doMouseOut(e);
     if (this.props.onChange) {
       let onChange = this.props.onChange;
@@ -277,7 +313,7 @@ class SketchField extends PureComponent {
   };
 
   _onMouseUp = (e) => {
-    const {onMouseUp} = this.props;
+    const { onMouseUp } = this.props;
     this._selectedTool.doMouseUp(e);
     // Update the final state to new-generated object
     // Ignore Path object since it would be created after mouseUp
@@ -352,6 +388,10 @@ class SketchField extends PureComponent {
     let canvas = this._fc;
     canvas.setBackgroundColor(color, () => canvas.renderAll())
   };
+
+  canvas = () => {
+    return this._fc;
+  }
 
   /**
    * Zoom the drawing by the factor specified
@@ -486,11 +526,15 @@ class SketchField extends PureComponent {
     let canvas = this._fc;
     setTimeout(() => {
       canvas.loadFromJSON(json, () => {
-        if(this.props.tool === Tool.DefaultTool){
+        if (this.props.tool === Tool.DefaultTool) {
           canvas.isDrawingMode = canvas.selection = false;
           canvas.forEachObject((o) => o.selectable = o.evented = false);
         }
+
         canvas.renderAll();
+
+        canvas.setViewportTransform(canvas.viewportTransform);
+
         if (this.props.onChange) {
           this.props.onChange()
         }
@@ -599,24 +643,42 @@ class SketchField extends PureComponent {
     img.src = dataUrl
   };
 
-  addText = (text, options = {}) => {
+  addText = (text, options = {}, position = null) => {
     let canvas = this._fc;
     let iText = new fabric.IText(text, options);
-    let opts = {
-      left: (canvas.getWidth() - iText.width) * 0.5,
-      top: (canvas.getHeight() - iText.height) * 0.5,
-    };
-    Object.assign(options, opts);
-    iText.set({
-      'left': options.left,
-      'top': options.top
-    });
+
+    if (position) {
+
+      iText.set({
+        'left': position.left || 100,
+        'top': position.top || 100
+      });
+
+    } else {
+
+      let opts = {
+        left: (canvas.getWidth() - iText.width) * 0.5,
+        top: (canvas.getHeight() - iText.height) * 0.5,
+      };
+      Object.assign(options, opts);
+
+      iText.set({
+        'left': opts.left || 0,
+        'top': opts.top || 0
+      });
+
+    }
+
+    // // eslint-disable-next-line no-console
+    // console.log(position);
+    // // eslint-disable-next-line no-console
+    // console.log(iText);
 
     canvas.add(iText);
   };
 
   callEvent = (e, eventFunction) => {
-    if(this._selectedTool)
+    if (this._selectedTool)
       eventFunction(e);
   }
 
@@ -641,7 +703,7 @@ class SketchField extends PureComponent {
     this._backgroundColor(backgroundColor)
 
     let selectedTool = this._tools[tool];
-    if(selectedTool)
+    if (selectedTool)
       selectedTool.configureCanvas(this.props);
     this._selectedTool = selectedTool;
 
@@ -657,11 +719,14 @@ class SketchField extends PureComponent {
     canvas.on('object:removed', e => this.callEvent(e, this._onObjectRemoved));
     canvas.on('mouse:down', e => this.callEvent(e, this._onMouseDown));
     canvas.on('mouse:move', e => this.callEvent(e, this._onMouseMove));
-    canvas.on('mouse:up', e =>  this.callEvent(e, this._onMouseUp));
+    canvas.on('mouse:up', e => this.callEvent(e, this._onMouseUp));
     canvas.on('mouse:out', e => this.callEvent(e, this._onMouseOut));
     canvas.on('object:moving', e => this.callEvent(e, this._onObjectMoving));
     canvas.on('object:scaling', e => this.callEvent(e, this._onObjectScaling));
     canvas.on('object:rotating', e => this.callEvent(e, this._onObjectRotating));
+    canvas.on('object:selected', e => this.callEvent(e, this._onObjectSelected));
+    canvas.on('selection:updated', e => this.callEvent(e, this._onSelectionUpdated));
+    canvas.on('selection:created', e => this.callEvent(e, this._onSelectionCreated));
     // IText Events fired on Adding Text
     // canvas.on("text:event:changed", console.log)
     // canvas.on("text:selection:changed", console.log)
@@ -690,10 +755,17 @@ class SketchField extends PureComponent {
       this._selectedTool = this._tools[this.props.tool];
       //Bring the cursor back to default if it is changed by a tool
       this._fc.defaultCursor = 'default';
-      if(this._selectedTool){
+      if (this._selectedTool) {
         this._selectedTool.configureCanvas(this.props);
       }
     }
+
+    if (this.props.lineColor !== prevProps.lineColor) {
+      if (this._selectedTool) {
+        this._selectedTool.configureCanvas(this.props);
+      }
+    }
+
 
     if (this.props.backgroundColor !== prevProps.backgroundColor) {
       this._backgroundColor(this.props.backgroundColor)
