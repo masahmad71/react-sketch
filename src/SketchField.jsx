@@ -91,6 +91,7 @@ class SketchField extends PureComponent {
     className: PropTypes.string,
     // Style options to pass to container div of canvas
     style: PropTypes.object,
+    resizeCanvasOnly: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -104,6 +105,7 @@ class SketchField extends PureComponent {
     widthCorrection: 0,
     heightCorrection: 0,
     forceValue: false,
+    resizeCanvasOnly: false,
     onObjectAdded: () => null,
     onObjectModified: () => null,
     onObjectRemoved: () => null,
@@ -379,6 +381,22 @@ class SketchField extends PureComponent {
     canvas.calcOffset();
   };
 
+  _resizeCanvas = (e, canvasWidth = null, canvasHeight = null) => {
+    if (e) e.preventDefault();
+    let { widthCorrection, heightCorrection } = this.props;
+    let canvas = this._fc;
+    let { offsetWidth, clientHeight } = this._container;
+    let prevWidth = canvasWidth || canvas.getWidth();
+    let prevHeight = canvasHeight || canvas.getHeight();
+    let wfactor = ((offsetWidth - widthCorrection) / prevWidth).toFixed(2);
+    let hfactor = ((clientHeight - heightCorrection) / prevHeight).toFixed(2);
+    canvas.setWidth(offsetWidth - widthCorrection);
+    canvas.setHeight(clientHeight - heightCorrection);
+
+    canvas.renderAll();
+    canvas.calcOffset();
+  };
+
   /**
    * Sets the background color for this sketch
    * @param color in rgba or hex format
@@ -643,6 +661,16 @@ class SketchField extends PureComponent {
     img.src = dataUrl
   };
 
+  /**
+  * resize canvas without resizing the content
+  *
+  * @param canvasSize 
+  * @param options
+  */
+  resizeCanvas = ({ height, width }, options = {}) => {
+    this._resizeCanvas(null, width, height);
+  };
+
   addText = (text, options = {}, position = null) => {
     let canvas = this._fc;
     let iText = new fabric.IText(text, options);
@@ -748,7 +776,12 @@ class SketchField extends PureComponent {
     if (this.props.width !== prevProps.width
       || this.props.height !== prevProps.height) {
 
-      this._resize()
+      if (this.props.resizeCanvasOnly) {
+        this._resizeCanvas();
+      } else {
+        this._resize()
+      }
+
     }
 
     if (this.props.tool !== prevProps.tool) {
