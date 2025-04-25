@@ -2,7 +2,6 @@ const Paths = require('./paths');
 const DefinePlugin = require('webpack/lib/DefinePlugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const NoEmitOnErrorsPlugin = require('webpack/lib/NoEmitOnErrorsPlugin');
-const OccurrenceOrderPlugin = require('webpack/lib/optimize/OccurrenceOrderPlugin');
 const AggressiveMergingPlugin = require('webpack/lib/optimize/AggressiveMergingPlugin');
 const ModuleConcatenationPlugin = require('webpack/lib/optimize/ModuleConcatenationPlugin');
 
@@ -21,6 +20,7 @@ const internals = ['fabric', 'canvas'];
 
 
 module.exports = {
+  mode: 'production',
   entry: {
     src: './src'
   },
@@ -43,7 +43,7 @@ module.exports = {
         test: /\.(js|jsx)$/,
         include: [Paths.srcPath],
         exclude: /(node_modules|bower_components|lib)/,
-        loaders: ['babel-loader']
+        use: ['babel-loader']
       }
     ]
   },
@@ -56,10 +56,12 @@ module.exports = {
       }
     }),
     new NoEmitOnErrorsPlugin(),
-    new OccurrenceOrderPlugin(),
     new AggressiveMergingPlugin(),
     new DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     })
-  ]
+  ],
+  stats: {
+    modules: true,
+  },
 };
