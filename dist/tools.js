@@ -1,24 +1,9 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-Object.defineProperty(exports, "SketchField", {
-  enumerable: true,
-  get: function get() {
-    return _SketchField.default;
-  }
-});
-Object.defineProperty(exports, "Tools", {
-  enumerable: true,
-  get: function get() {
-    return _tools.default;
-  }
-});
 exports.default = void 0;
-var _SketchField = _interopRequireDefault(require("./SketchField"));
-var _tools = _interopRequireDefault(require("./tools"));
 (function () {
   var enterModule = typeof reactHotLoaderGlobal !== 'undefined' ? reactHotLoaderGlobal.enterModule : undefined;
   enterModule && enterModule(module);
@@ -27,8 +12,16 @@ var __signature__ = typeof reactHotLoaderGlobal !== 'undefined' ? reactHotLoader
   return a;
 };
 var _default = {
-  SketchField: _SketchField.default,
-  Tools: _tools.default
+  Circle: 'circle',
+  Line: 'line',
+  Arrow: 'arrow',
+  Pencil: 'pencil',
+  Rectangle: 'rectangle',
+  RectangleLabel: 'rectangle-label',
+  Select: 'select',
+  Pan: 'pan',
+  Highlighter: 'highlighter',
+  DefaultTool: 'default-tool'
 };
 var _default2 = _default;
 exports.default = _default2;
@@ -38,7 +31,7 @@ exports.default = _default2;
   if (!reactHotLoader) {
     return;
   }
-  reactHotLoader.register(_default, "default", "C:\\Dropbox\\Projects\\SALAM\\Apps\\working\\hisx\\react-sketch\\src\\index.js");
+  reactHotLoader.register(_default, "default", "C:\\Dropbox\\Projects\\SALAM\\Apps\\working\\hisx\\react-sketch\\src\\tools.js");
 })();
 ;
 (function () {

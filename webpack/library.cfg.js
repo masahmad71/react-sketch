@@ -19,6 +19,7 @@ function containsObject(obj, list) {
 const externals = [];
 const internals = ['fabric', 'canvas'];
 
+
 module.exports = {
   entry: {
     src: './src'
@@ -29,7 +30,8 @@ module.exports = {
   output: {
     path: Paths.outputPath,
     filename: 'index.js',
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
+    hashFunction: 'sha256',
   },
   resolve: {
     extensions: ['.js', '.jsx']
